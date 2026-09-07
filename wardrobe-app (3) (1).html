@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wardrobe — Outfit Suggestions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #eef0e6;
+    --paper: #fbfaf4;
+    --ink: #2b2a24;
+    --ink-soft: #6b6a5f;
+    --line: #d9d6c8;
+    --gold: #b8862e;
+    --gold-soft: #e8d3a3;
+    --teal: #2f6e62;
+    --teal-soft: #cfe3de;
+    --rose: #c7788b;
+    --rose-soft: #f0d9df;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(184,134,46,0.08), transparent 40%),
+      radial-gradient(circle at 85% 92%, rgba(47,110,98,0.08), transparent 40%);
+    font-family:'Work Sans', sans-serif;
+    color: var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding: 32px 16px;
+  }
+  .app-frame{
+    width:100%;
+    max-width:420px;
+    background: var(--paper);
+    border-radius: 28px;
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 60px -30px rgba(43,42,36,0.35);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    min-height: 780px;
+  }
+  header.topbar{
+    padding: 22px 22px 16px;
+    border-bottom: 1px solid var(--line);
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .topbar-left{ display:flex; align-items:baseline; gap:10px; }
+  .back-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-size:19px;
+    line-height:1;
+    color: var(--ink);
+    padding:0 2px 2px 0;
+    font-family:'Work Sans', sans-serif;
+    visibility:hidden;
+  }
+  .back-btn.visible{ visibility:visible; }
+  .back-btn:hover{ color: var(--gold); }
+  .brand{
+    font-family:'Fraunces', serif;
+    font-size: 22px;
+    font-weight:600;
+    letter-spacing: -0.02em;
+  }
+  .brand em{ font-style:italic; color:var(--gold); }
+  .step-dot{
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  main{
+    flex:1;
+    padding: 24px 22px 22px;
+    overflow-y:auto;
+  }
+  .screen{ display:none; animation: rise 0.35s ease; }
+  .screen.active{ display:block; }
+  @keyframes rise{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  h1.hero{
+    font-family:'Fraunces', serif;
+    font-size: 30px;
+    line-height:1.08;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin: 4px 0 10px;
+  }
+  p.sub{ color: var(--ink-soft); font-size:14.5px; line-height:1.5; margin:0 0 22px; }
+
+  label.field-label{
+    display:block;
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color: var(--ink-soft);
+    margin: 18px 0 8px;
+  }
+  input[type=text], input[type=email]{
+    width:100%;
+    padding: 13px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    font-family:'Work Sans', sans-serif;
+    font-size:15px;
+    color: var(--ink);
+    outline:none;
+    transition: border-color 0.15s;
+  }
+  input:focus{ border-color: var(--gold); }
+  textarea{
+    width:100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    font-family:'Work Sans', sans-serif;
+    font-size:14px;
+    color: var(--ink);
+    outline:none;
+    resize:vertical;
+    transition: border-color 0.15s;
+  }
+  textarea:focus{ border-color: var(--gold); }
+
+  /* Care-tag chip: the signature motif, echoing a clothing care label */
+  .tag-grid{ display:flex; flex-wrap:wrap; gap:10px; }
+  .care-tag{
+    position:relative;
+    padding: 10px 16px 10px 22px;
+    background:#fff;
+    border: 1.5px dashed var(--line);
+    border-radius: 4px 10px 10px 4px;
+    font-size: 14px;
+    cursor:pointer;
+    user-select:none;
+    transition: all 0.15s;
+  }
+  .care-tag::before{
+    content:'';
+    position:absolute;
+    left:8px; top:50%;
+    width:5px; height:5px;
+    border-radius:50%;
+    background: var(--bg);
+    border: 1.5px solid var(--ink-soft);
+    transform: translateY(-50%);
+  }
+  .care-tag.selected{
+    border-color: var(--gold);
+    border-style: solid;
+    background: var(--gold-soft);
+    color: #5c4415;
+    font-weight:600;
+  }
+  .care-tag.selected::before{ border-color:#5c4415; background:#fff; }
+  .care-tag:focus-visible{ outline: 2px solid var(--teal); outline-offset:2px; }
+
+  .btn{
+    width:100%;
+    padding: 14px;
+    border-radius: 10px;
+    border:none;
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    margin-top: 26px;
+    transition: transform 0.12s, opacity 0.15s;
+  }
+  .btn:active{ transform: scale(0.98); }
+  .btn-primary{ background: var(--ink); color:#fbfaf4; }
+  .btn-primary:disabled{ opacity:0.35; cursor:not-allowed; }
+  .btn-ghost{
+    background:transparent;
+    border: 1.5px solid var(--line);
+    color: var(--ink);
+    margin-top:12px;
+  }
+  .btn-small{
+    width:auto;
+    padding: 9px 14px;
+    font-size:13px;
+    margin-top:0;
+  }
+
+  .upload-zone{
+    border: 1.5px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 26px 16px;
+    text-align:center;
+    cursor:pointer;
+    background: #fff;
+  }
+  .upload-zone:hover{ border-color: var(--teal); }
+  .upload-zone .icon{ font-size:26px; }
+  .upload-zone p{ margin:8px 0 0; font-size:13.5px; color: var(--ink-soft); }
+
+  .closet-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top:18px;
+  }
+  .item-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    overflow:hidden;
+    position:relative;
+  }
+  .item-card img{ width:100%; height:110px; object-fit:contain; background:#f4f2ea; display:block; }
+  .remove-btn{
+    position:absolute;
+    top:6px; right:6px;
+    width:24px; height:24px;
+    border-radius:50%;
+    border:none;
+    background: rgba(43,42,36,0.75);
+    color:#fff;
+    font-family:'Work Sans', sans-serif;
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: background 0.15s, transform 0.12s;
+  }
+  .remove-btn:hover{ background: var(--rose); }
+  .remove-btn:active{ transform: scale(0.92); }
+  .item-meta{ padding:10px; }
+  .swatch-row{ display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+  .swatch{ width:14px; height:14px; border-radius:50%; border:1px solid rgba(0,0,0,0.15); flex-shrink:0; }
+  .swatch-label{ font-family:'Space Mono', monospace; font-size:10.5px; color: var(--ink-soft); }
+  select.cat-select{
+    width:100%;
+    font-size:12.5px;
+    padding:6px 8px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background:#fff;
+    font-family:'Work Sans', sans-serif;
+    margin-bottom:6px;
+  }
+  .mini-label{
+    display:block;
+    font-family:'Space Mono', monospace;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color: var(--ink-soft);
+    margin-bottom:2px;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 30px 10px;
+    color: var(--ink-soft);
+  }
+  .empty-state .icon{ font-size:30px; margin-bottom:8px; }
+
+  .outfit-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom:14px;
+  }
+  .outfit-imgs{ display:flex; gap:8px; margin-bottom:12px; }
+  .outfit-imgs img{ width: 62px; height:62px; object-fit:contain; background:#f4f2ea; border-radius:8px; border:1px solid var(--line); }
+  .outfit-tagline{ font-family:'Fraunces', serif; font-size:16.5px; font-weight:600; margin:0 0 4px; }
+  .outfit-note{ font-size:12.5px; color: var(--ink-soft); margin:0; }
+  .match-tag{
+    display:inline-block;
+    font-family:'Space Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: var(--teal-soft);
+    color: #17453c;
+    margin-bottom:10px;
+  }
+  .outfit-card{ cursor:pointer; transition: border-color 0.15s, box-shadow 0.15s; }
+  .outfit-card.selected{ border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-soft); }
+  .rate-row{
+    display:none;
+    align-items:center;
+    gap:10px;
+    margin-top:12px;
+    padding-top:12px;
+    border-top: 1px dashed var(--line);
+  }
+  .rate-row.visible{ display:flex; }
+  .rate-row .rate-label{ font-size:12px; color:var(--ink-soft); }
+  .stars{ display:flex; gap:3px; }
+  .stars .star{ font-size:18px; line-height:1; cursor:pointer; color:var(--line); }
+  .stars .star.filled{ color: var(--gold); }
+  .rated-note{ font-family:'Space Mono', monospace; font-size:10.5px; color: var(--teal); margin-top:8px; }
+
+  .link-btn{
+    background:none;
+    border:none;
+    font-family:'Work Sans', sans-serif;
+    font-size:12.5px;
+    color: var(--teal);
+    text-decoration:underline;
+    cursor:pointer;
+    padding:0;
+  }
+  .gender-note{ font-size:12px; color:var(--ink-soft); margin-top:6px; }
+  .profile-row{ display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line); font-size:14px; }
+  .profile-row span:first-child{ color:var(--ink-soft); }
+
+  .nav-row{ display:flex; gap:12px; margin-top:4px; }
+
+  .tc-box{
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    background:#fff;
+    margin-top: 6px;
+    overflow:hidden;
+  }
+  .tc-toggle{
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    padding:14px 16px;
+    font-family:'Work Sans', sans-serif;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .tc-content{
+    display:none;
+    padding: 0 16px 16px;
+    max-height:220px;
+    overflow-y:auto;
+    font-size:12.5px;
+    line-height:1.55;
+    color: var(--ink-soft);
+  }
+  .tc-content.open{ display:block; }
+  .tc-content p{ margin:0 0 10px; }
+  .tc-check{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin-top:14px;
+    font-size:13px;
+    color: var(--ink-soft);
+    cursor:pointer;
+  }
+  .tc-check input{ margin-top:2px; accent-color: var(--gold); }
+
+  .filter-bar{ display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; }
+  .filter-chip{
+    flex-shrink:0;
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    padding:6px 12px;
+    border-radius:20px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .filter-chip.selected{ background: var(--ink); color:#fbfaf4; border-color:var(--ink); }
+  .search-input{
+    width:100%;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-size:13.5px;
+    margin-bottom:12px;
+    font-family:'Work Sans', sans-serif;
+  }
+
+  .worn-badge{
+    display:inline-block;
+    font-family:'Space Mono', monospace;
+    font-size:9.5px;
+    color: var(--ink-soft);
+    margin-top:4px;
+  }
+  .confirm-note{
+    font-size:10.5px;
+    color: #8a5a17;
+    background: var(--gold-soft);
+    border-radius:6px;
+    padding:0;
+    margin:0;
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    transition: max-height 0.25s ease, opacity 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+  }
+  .confirm-note.visible{
+    max-height:60px;
+    opacity:1;
+    padding:6px 8px;
+    margin-top:6px;
+  }
+  .occ-select{ margin-top:4px; }
+
+  .card-actions{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .icon-btn{
+    flex:1;
+    min-width:90px;
+    padding:9px 10px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-size:12px;
+    font-family:'Work Sans', sans-serif;
+    cursor:pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .icon-btn.active{ background: var(--gold-soft); border-color: var(--gold); }
+  .icon-btn:disabled{ opacity:0.5; cursor:default; }
+  .day-picker{ display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  .day-picker button{
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    padding:6px 10px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    cursor:pointer;
+  }
+  .day-picker button.filled{ background: var(--teal-soft); border-color: var(--teal); }
+
+  .calendar-grid{ display:flex; flex-direction:column; gap:10px; }
+  .day-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .day-card .day-name{ font-family:'Fraunces', serif; font-weight:600; width:44px; flex-shrink:0; }
+  .day-card .day-imgs{ display:flex; gap:6px; flex:1; }
+  .day-card .day-imgs img{ width:36px; height:36px; object-fit:contain; background:#f4f2ea; border-radius:6px; border:1px solid var(--line); }
+  .day-card .day-empty{ color: var(--ink-soft); font-size:12.5px; }
+  .day-card .clear-day{ background:none; border:none; color:var(--rose); cursor:pointer; font-size:16px; }
+
+  .history-item{ display:flex; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
+  .history-item img{ width:40px; height:40px; object-fit:contain; background:#f4f2ea; border-radius:6px; border:1px solid var(--line); }
+  .history-item .hist-label{ font-size:12.5px; color: var(--ink-soft); }
+
+  ::selection{ background: var(--rose-soft); }
+  canvas{ display:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    .screen{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-frame">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="back-btn" id="btnBack" aria-label="Back" title="Back">←</button>
+      <div class="brand">ward<em>robe</em></div>
+    </div>
+    <div style="text-align:right;">
+      <div class="step-dot" id="stepIndicator">Sign up</div>
+      <div class="nav-row" id="navRow" style="display:none;">
+        <button class="link-btn" id="btnOpenProfile">Profile</button>
+        <button class="link-btn" id="btnOpenCalendar">Calendar</button>
+        <button class="link-btn" id="btnOpenSaved">Saved</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- SCREEN 0: WELCOME -->
+    <section class="screen active" id="screen-welcome">
+      <h1 class="hero">heyy 👋<br>ready to glow up<br>your closet?</h1>
+      <p class="sub">wardrobe helps you mix-match what you already own — no shopping needed, no cap. free forever, every gender welcome. let's get you set up 💫</p>
+
+      <div class="tc-box" id="tcBox">
+        <button class="tc-toggle" id="tcToggle" type="button">📄 Read Terms & Conditions <span id="tcArrow">▾</span></button>
+        <div class="tc-content" id="tcContent">
+          <p><strong>1. What we do.</strong> wardrobe lets you upload photos of your clothes and get outfit combinations suggested back to you. That's it — no shopping, no selling your stuff.</p>
+          <p><strong>2. Your photos.</strong> Clothing photos you upload are used only to generate your outfit suggestions. We don't share them with anyone else or use them to advertise to you.</p>
+          <p><strong>3. Your info.</strong> Your name, gender, and style preferences are used only to personalise suggestions — never shown publicly to other users.</p>
+          <p><strong>4. Age.</strong> You should be at least 13 years old to use wardrobe. If you're younger, please use it with a parent or guardian.</p>
+          <p><strong>5. No guarantees.</strong> Outfit matches are suggestions based on colour and your preferences — we're not liable if you don't vibe with a suggestion 😅</p>
+          <p><strong>6. Changes.</strong> We may update these terms as the app grows — we'll always let you know.</p>
+        </div>
+      </div>
+      <label class="tc-check">
+        <input type="checkbox" id="tcCheckbox">
+        <span>I've read and agree to the Terms & Conditions</span>
+      </label>
+
+      <button class="btn btn-primary" id="btnWelcomeNext" disabled>Let's go →</button>
+    </section>
+
+    <!-- SCREEN 1: SIGN UP -->
+    <section class="screen" id="screen-signup">
+      <h1 class="hero">Let's set up<br>your closet.</h1>
+      <p class="sub">One account, styled your way. Tell us a little about you to get started.</p>
+
+      <label class="field-label" for="nameInput">Your name</label>
+      <input type="text" id="nameInput" placeholder="e.g. Riya" autocomplete="off">
+
+      <label class="field-label" for="emailInput">Email or username</label>
+      <input type="text" id="emailInput" placeholder="e.g. riya@email.com" autocomplete="off">
+
+      <label class="field-label">Gender</label>
+      <div class="tag-grid" id="genderGrid">
+        <div class="care-tag" data-value="Male" tabindex="0" role="button">Male</div>
+        <div class="care-tag" data-value="Female" tabindex="0" role="button">Female</div>
+        <div class="care-tag" data-value="Transgender" tabindex="0" role="button">Transgender</div>
+        <div class="care-tag" data-value="Other" tabindex="0" role="button">Other</div>
+      </div>
+      <p class="gender-note">Used only to tailor outfit suggestions — never shown to other users.</p>
+
+      <button class="btn btn-primary" id="btnSignupNext" disabled>Continue</button>
+    </section>
+
+    <!-- SCREEN 2: STYLE QUIZ -->
+    <section class="screen" id="screen-quiz">
+      <h1 class="hero">What's your<br>style?</h1>
+      <p class="sub">Pick as many as you like. We'll show these first — you can always browse everything later.</p>
+
+      <div class="tag-grid" id="styleGrid">
+        <div class="care-tag" data-value="Casual" tabindex="0" role="button">Casual</div>
+        <div class="care-tag" data-value="Streetwear" tabindex="0" role="button">Streetwear</div>
+        <div class="care-tag" data-value="Formal" tabindex="0" role="button">Formal</div>
+        <div class="care-tag" data-value="Ethnic" tabindex="0" role="button">Ethnic</div>
+        <div class="care-tag" data-value="Minimalist" tabindex="0" role="button">Minimalist</div>
+        <div class="care-tag" data-value="Sporty" tabindex="0" role="button">Sporty</div>
+        <div class="care-tag" data-value="Vintage" tabindex="0" role="button">Vintage</div>
+        <div class="care-tag" data-value="Boho" tabindex="0" role="button">Boho</div>
+      </div>
+
+      <label class="field-label" for="quizNote">Anything else? (optional)</label>
+      <textarea id="quizNote" placeholder="e.g. mostly pastels, avoid skirts, love layering" rows="3"></textarea>
+
+      <button class="btn btn-primary" id="btnQuizNext" disabled>Continue</button>
+    </section>
+
+    <!-- SCREEN 3: CLOSET -->
+    <section class="screen" id="screen-closet">
+      <h1 class="hero">Build your<br>closet.</h1>
+      <p class="sub">Upload photos of your clothes. We'll pick up the dominant colour and clean the background automatically — you just confirm the category.</p>
+
+      <div class="upload-zone" id="uploadZone">
+        <div class="icon">📷</div>
+        <p><strong>Tap to add a clothing photo</strong><br>or drop an image here</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none" multiple>
+
+      <div id="closetFilterWrap" style="display:none;">
+        <label class="field-label" style="margin-top:22px;">Filter your closet</label>
+        <div class="filter-bar" id="closetFilterBar"></div>
+        <input type="text" class="search-input" id="closetSearch" placeholder="Search by colour, e.g. blue, black...">
+      </div>
+
+      <div class="closet-grid" id="closetGrid"></div>
+      <div class="empty-state" id="closetEmpty">
+        <div class="icon">🧺</div>
+        <p>Your closet is empty. Add a top, a bottom, and a pair of footwear to unlock outfit suggestions.</p>
+      </div>
+      <p class="gender-note" id="closetStatus" style="margin-top:14px;"></p>
+
+      <button class="btn btn-primary" id="btnGenerate" disabled>Generate outfits</button>
+    </section>
+
+    <!-- SCREEN 4: SUGGESTIONS -->
+    <section class="screen" id="screen-suggestions">
+      <h1 class="hero">Today's<br>outfits.</h1>
+      <p class="sub" id="suggestSub">Matched to your style picks.</p>
+
+      <label class="field-label">What's it for?</label>
+      <div class="tag-grid" id="occasionGrid"></div>
+
+      <label class="field-label" style="margin-top:16px;">Weather</label>
+      <div class="tag-grid" id="weatherGrid"></div>
+
+      <div id="outfitList" style="margin-top:20px;"></div>
+      <p class="gender-note" id="learningNote" style="text-align:center;"></p>
+
+      <div id="browseAllWrap" style="text-align:center; margin-top:6px;">
+        <button class="btn btn-ghost" id="btnBrowseAll">Don't like anything here? Browse every style</button>
+      </div>
+
+      <button class="btn btn-ghost" id="btnBackToCloset">← Add more clothes</button>
+    </section>
+
+    <!-- SCREEN 5: EDIT PROFILE -->
+    <section class="screen" id="screen-profile">
+      <h1 class="hero">Edit your<br>preferences.</h1>
+      <p class="sub">Remove a style you no longer like, add new ones, or update anything else.</p>
+
+      <label class="field-label">Gender</label>
+      <div class="tag-grid" id="profileGenderGrid"></div>
+
+      <label class="field-label" style="margin-top:22px;">Style preferences</label>
+      <div class="tag-grid" id="profileStyleGrid"></div>
+
+      <label class="field-label" for="profileNote">Anything else? (optional)</label>
+      <textarea id="profileNote" placeholder="e.g. mostly pastels, avoid skirts, love layering" rows="3"></textarea>
+
+      <button class="btn btn-primary" id="btnSaveProfile">Save changes</button>
+      <button class="btn btn-ghost" id="btnCancelProfile">Cancel</button>
+    </section>
+
+    <!-- SCREEN 6: CALENDAR -->
+    <section class="screen" id="screen-calendar">
+      <h1 class="hero">Plan your<br>week.</h1>
+      <p class="sub">Assign outfits to days ahead — add one from the "Add to calendar" button on any suggested look.</p>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <button class="btn btn-ghost" id="btnCalendarBack">← Back to suggestions</button>
+    </section>
+
+    <!-- SCREEN 7: SAVED & HISTORY -->
+    <section class="screen" id="screen-history">
+      <h1 class="hero">Saved &<br>history.</h1>
+      <p class="sub">Looks you've favourited, and outfits you've marked as worn.</p>
+
+      <label class="field-label">Saved looks</label>
+      <div id="savedList"></div>
+      <div class="empty-state" id="savedEmpty" style="display:none;">
+        <div class="icon">♡</div>
+        <p>Nothing saved yet — tap the ♡ on any outfit to save it here.</p>
+      </div>
+
+      <label class="field-label" style="margin-top:22px;">Worn history</label>
+      <div id="historyList"></div>
+      <div class="empty-state" id="historyEmpty" style="display:none;">
+        <div class="icon">🕒</div>
+        <p>No worn outfits logged yet.</p>
+      </div>
+
+      <button class="btn btn-ghost" id="btnHistoryBack">← Back to suggestions</button>
+    </section>
+
+  </main>
+</div>
+
+<canvas id="colorCanvas" width="30" height="30"></canvas>
+
+<script>
+  const state = {
+    name: '', email: '', gender: '',
+    styles: new Set(),
+    note: '',
+    closet: [], // {id, src, category, hex, occasion, wearCount}
+    showAll: false,
+    ratings: {}, // key -> rating 1-5
+    activity: [], // log of {key, top, bottom, shoe, layer, rating}
+    filterCategory: 'All',
+    filterQuery: '',
+    occasionPick: 'Any',
+    weatherPick: 'Any',
+    saved: [], // array of combo snapshots
+    history: [], // array of {id, label, snapshot, itemIds}
+    wornCounter: 0,
+    calendar: {Mon:null,Tue:null,Wed:null,Thu:null,Fri:null,Sat:null,Sun:null}
+  };
+  let itemIdCounter = 0;
+
+  const ALL_GENDERS = ['Male','Female','Transgender','Other'];
+  const ALL_STYLES = ['Casual','Streetwear','Formal','Ethnic','Minimalist','Sporty','Vintage','Boho'];
+  const OCCASIONS = ['Any','Work','Party','Casual','Gym','Ethnic'];
+  const WEATHERS = ['Any','Hot','Mild','Cold','Rainy'];
+  const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const CLOSET_FILTERS = ['All','Top','Bottom','One-piece','Footwear','Outerwear','Accessory'];
+
+  const screens = ['welcome','signup','quiz','closet','suggestions','profile','calendar','history'];
+  const stepLabels = {welcome:'Welcome', signup:'Sign up', quiz:'Style quiz', closet:'Your closet', suggestions:'Suggestions', profile:'Edit profile', calendar:'Calendar', history:'Saved & history'};
+  let navStack = [];
+  let currentScreen = 'welcome';
+  function goTo(name, isBack){
+    if(!isBack && name !== currentScreen){
+      navStack.push(currentScreen);
+    }
+    currentScreen = name;
+    screens.forEach(s => document.getElementById('screen-'+s).classList.toggle('active', s===name));
+    document.getElementById('stepIndicator').textContent = stepLabels[name];
+    document.getElementById('navRow').style.display = (name==='welcome'||name==='signup'||name==='quiz') ? 'none' : 'flex';
+    document.getElementById('btnBack').classList.toggle('visible', navStack.length > 0);
+    if(name==='calendar') renderCalendar();
+    if(name==='history') renderHistory();
+    document.querySelector('main').scrollTop = 0;
+  }
+  document.getElementById('btnBack').addEventListener('click', () => {
+    const prev = navStack.pop();
+    if(prev) goTo(prev, true);
+  });
+
+  // ---- Screen 0: Welcome ----
+  document.getElementById('tcToggle').addEventListener('click', () => {
+    const content = document.getElementById('tcContent');
+    const open = content.classList.toggle('open');
+    document.getElementById('tcArrow').textContent = open ? '▴' : '▾';
+  });
+  document.getElementById('tcCheckbox').addEventListener('change', e => {
+    document.getElementById('btnWelcomeNext').disabled = !e.target.checked;
+  });
+  document.getElementById('btnWelcomeNext').addEventListener('click', () => goTo('signup'));
+
+  // ---- Screen 1: Signup ----
+  const genderGrid = document.getElementById('genderGrid');
+  genderGrid.addEventListener('click', e => {
+    const tag = e.target.closest('.care-tag');
+    if(!tag) return;
+    [...genderGrid.children].forEach(c => c.classList.remove('selected'));
+    tag.classList.add('selected');
+    state.gender = tag.dataset.value;
+    checkSignup();
+  });
+  genderGrid.addEventListener('keydown', e => {
+    if((e.key==='Enter'||e.key===' ') && e.target.classList.contains('care-tag')){
+      e.preventDefault(); e.target.click();
+    }
+  });
+  document.getElementById('nameInput').addEventListener('input', checkSignup);
+  document.getElementById('emailInput').addEventListener('input', checkSignup);
+  function checkSignup(){
+    state.name = document.getElementById('nameInput').value.trim();
+    state.email = document.getElementById('emailInput').value.trim();
+    document.getElementById('btnSignupNext').disabled = !(state.name && state.email && state.gender);
+  }
+  document.getElementById('btnSignupNext').addEventListener('click', () => goTo('quiz'));
+
+  // ---- Screen 2: Style quiz ----
+  const styleGrid = document.getElementById('styleGrid');
+  styleGrid.addEventListener('click', e => {
+    const tag = e.target.closest('.care-tag');
+    if(!tag) return;
+    tag.classList.toggle('selected');
+    const v = tag.dataset.value;
+    tag.classList.contains('selected') ? state.styles.add(v) : state.styles.delete(v);
+    document.getElementById('btnQuizNext').disabled = state.styles.size === 0;
+  });
+  styleGrid.addEventListener('keydown', e => {
+    if((e.key==='Enter'||e.key===' ') && e.target.classList.contains('care-tag')){
+      e.preventDefault(); e.target.click();
+    }
+  });
+  document.getElementById('btnQuizNext').addEventListener('click', () => {
+    state.note = document.getElementById('quizNote').value.trim();
+    goTo('closet');
+  });
+
+  // ---- Screen 5: Edit profile ----
+  function renderChipGrid(containerId, options, selectedSet, multi){
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = '';
+    options.forEach(val => {
+      const chip = document.createElement('div');
+      chip.className = 'care-tag' + (selectedSet.has ? (selectedSet.has(val) ? ' selected' : '') : (selectedSet===val ? ' selected' : ''));
+      chip.textContent = val;
+      chip.dataset.value = val;
+      chip.tabIndex = 0;
+      chip.setAttribute('role','button');
+      grid.appendChild(chip);
+    });
+  }
+
+  let profileDraftGender = '';
+  let profileDraftStyles = new Set();
+
+  function openProfile(){
+    profileDraftGender = state.gender;
+    profileDraftStyles = new Set(state.styles);
+    document.getElementById('profileNote').value = state.note;
+    renderChipGrid('profileGenderGrid', ALL_GENDERS, profileDraftGender);
+    renderChipGrid('profileStyleGrid', ALL_STYLES, profileDraftStyles);
+    goTo('profile');
+  }
+
+  document.getElementById('btnOpenProfile').addEventListener('click', openProfile);
+  document.getElementById('btnOpenCalendar').addEventListener('click', () => goTo('calendar'));
+  document.getElementById('btnOpenSaved').addEventListener('click', () => goTo('history'));
+
+  document.getElementById('profileGenderGrid').addEventListener('click', e => {
+    const chip = e.target.closest('.care-tag');
+    if(!chip) return;
+    profileDraftGender = chip.dataset.value;
+    renderChipGrid('profileGenderGrid', ALL_GENDERS, profileDraftGender);
+  });
+
+  document.getElementById('profileStyleGrid').addEventListener('click', e => {
+    const chip = e.target.closest('.care-tag');
+    if(!chip) return;
+    const v = chip.dataset.value;
+    profileDraftStyles.has(v) ? profileDraftStyles.delete(v) : profileDraftStyles.add(v);
+    renderChipGrid('profileStyleGrid', ALL_STYLES, profileDraftStyles);
+  });
+
+  document.getElementById('btnSaveProfile').addEventListener('click', () => {
+    state.gender = profileDraftGender || state.gender;
+    state.styles = new Set(profileDraftStyles);
+    state.note = document.getElementById('profileNote').value.trim();
+    state.showAll = false;
+    if(state.closet.length) buildOutfits();
+    goTo('suggestions');
+  });
+
+  document.getElementById('btnCancelProfile').addEventListener('click', () => goTo('suggestions'));
+
+  // ---- Screen 6: Calendar ----
+  function renderCalendar(){
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = DAYS.map(day => {
+      const combo = state.calendar[day];
+      const imgs = combo ? comboImgs(combo) : '';
+      return `
+        <div class="day-card">
+          <span class="day-name">${day}</span>
+          ${combo
+            ? `<div class="day-imgs">${imgs}</div><button class="clear-day" data-day="${day}" title="Remove">✕</button>`
+            : `<span class="day-empty">No outfit planned</span>`}
+        </div>`;
+    }).join('');
+    grid.querySelectorAll('.clear-day').forEach(btn => {
+      btn.addEventListener('click', () => { state.calendar[btn.dataset.day] = null; renderCalendar(); });
+    });
+  }
+  document.getElementById('btnCalendarBack').addEventListener('click', () => goTo('suggestions'));
+
+  function comboImgs(combo){
+    return [combo.top, combo.bottom, combo.shoe, combo.layer, combo.accessory]
+      .filter(Boolean).map(i => `<img src="${i.src}" alt="">`).join('');
+  }
+  function comboSnapshot(c){
+    return { top:c.top, bottom:c.bottom, shoe:c.shoe, layer:c.layer, accessory:c.accessory, isOnePiece: !!c.onepiece, onepiece: c.onepiece };
+  }
+
+  // ---- Screen 7: Saved & History ----
+  function renderHistory(){
+    const savedList = document.getElementById('savedList');
+    const savedEmpty = document.getElementById('savedEmpty');
+    savedEmpty.style.display = state.saved.length ? 'none' : 'block';
+    savedList.innerHTML = state.saved.map((c, idx) => `
+      <div class="history-item">
+        ${comboImgs(c)}
+        <span class="hist-label">Saved look ${idx+1}</span>
+      </div>`).join('');
+
+    const historyList = document.getElementById('historyList');
+    const historyEmpty = document.getElementById('historyEmpty');
+    historyEmpty.style.display = state.history.length ? 'none' : 'block';
+    historyList.innerHTML = state.history.map(h => `
+      <div class="history-item">
+        ${comboImgs(h.snapshot)}
+        <span class="hist-label">${h.label}</span>
+        <button class="clear-day" data-hist-id="${h.id}" title="Undo / remove" style="margin-left:auto;">✕</button>
+      </div>`).join('');
+    historyList.querySelectorAll('.clear-day').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const entryId = +btn.dataset.histId;
+        const entry = state.history.find(h => h.id === entryId);
+        if(entry){
+          entry.itemIds.forEach(id => {
+            const item = state.closet.find(i => i.id === id);
+            if(item) item.wearCount = Math.max(0, (item.wearCount||0) - 1);
+          });
+          state.history = state.history.filter(h => h.id !== entryId);
+        }
+        renderHistory();
+      });
+    });
+  }
+  document.getElementById('btnHistoryBack').addEventListener('click', () => goTo('suggestions'));
+
+
+  // ---- Closet screen: occasion / weather pickers, filter bar ----
+  function renderSingleChipGrid(containerId, options, current, onPick){
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = options.map(v =>
+      `<div class="care-tag ${current===v?'selected':''}" data-value="${v}" tabindex="0" role="button">${v}</div>`
+    ).join('');
+    grid.querySelectorAll('.care-tag').forEach(chip => {
+      chip.addEventListener('click', () => onPick(chip.dataset.value));
+    });
+  }
+  function renderOccasionWeather(){
+    renderSingleChipGrid('occasionGrid', OCCASIONS, state.occasionPick, v => {
+      state.occasionPick = v; renderOccasionWeather();
+      if(currentScreen === 'suggestions') buildOutfits();
+    });
+    renderSingleChipGrid('weatherGrid', WEATHERS, state.weatherPick, v => {
+      state.weatherPick = v; renderOccasionWeather();
+      if(currentScreen === 'suggestions') buildOutfits();
+    });
+  }
+  renderOccasionWeather();
+  renderClosetFilterBar();
+
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput = document.getElementById('fileInput');
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', e => e.preventDefault());
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    handleFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+  function handleFiles(files){
+    [...files].forEach(file => {
+      if(!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          const hex = detectDominantColor(img);
+          const cleanSrc = removeBackground(img);
+          addClosetItem(ev.target.result, hex, cleanSrc);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    fileInput.value = '';
+  }
+
+  function detectDominantColor(img){
+    const canvas = document.getElementById('colorCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,30,30);
+    ctx.drawImage(img, 0, 0, 30, 30);
+    const data = ctx.getImageData(0,0,30,30).data;
+    let r=0,g=0,b=0,count=0;
+    for(let i=0; i<data.length; i+=4){
+      r += data[i]; g += data[i+1]; b += data[i+2];
+      count++;
+    }
+    r = Math.round(r/count); g = Math.round(g/count); b = Math.round(b/count);
+    return {hex: rgbToHex(r,g,b), r, g, b};
+  }
+  function rgbToHex(r,g,b){
+    return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+  }
+  function rgbToHsl(r,g,b){
+    r/=255; g/=255; b/=255;
+    const max=Math.max(r,g,b), min=Math.min(r,g,b);
+    let h, s, l=(max+min)/2;
+    if(max===min){ h=s=0; }
+    else{
+      const d = max-min;
+      s = l>0.5 ? d/(2-max-min) : d/(max+min);
+      switch(max){
+        case r: h=(g-b)/d + (g<b?6:0); break;
+        case g: h=(b-r)/d + 2; break;
+        case b: h=(r-g)/d + 4; break;
+      }
+      h/=6;
+    }
+    return {h: h*360, s: s*100, l: l*100};
+  }
+
+  function nextNeededCategory(){
+    const has = c => state.closet.some(i => i.category === c);
+    const priority = ['Top','Bottom','Footwear','Accessory','Outerwear'];
+    for(const cat of priority){ if(!has(cat)) return cat; }
+    return 'Top';
+  }
+
+  // Rough "cutout" effect: flood-fill from the four corners only, so only background
+  // actually connected to the edges gets removed — never isolated pixels inside the garment.
+  function removeBackground(img){
+    const MAX = 400;
+    const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+    const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    const imgData = ctx.getImageData(0,0,w,h);
+    const d = imgData.data;
+    const corners = [[2,2],[w-3,2],[2,h-3],[w-3,h-3]];
+    let br=0,bg=0,bb=0;
+    corners.forEach(([x,y]) => {
+      const i = (y*w+x)*4;
+      br += d[i]; bg += d[i+1]; bb += d[i+2];
+    });
+    br/=4; bg/=4; bb/=4;
+    const threshold = 38;
+    const visited = new Uint8Array(w*h);
+    const stack = corners.map(([x,y]) => y*w+x);
+    while(stack.length){
+      const p = stack.pop();
+      if(visited[p]) continue;
+      visited[p] = 1;
+      const x = p % w, y = (p / w) | 0;
+      const i = p*4;
+      const dist = Math.sqrt((d[i]-br)**2 + (d[i+1]-bg)**2 + (d[i+2]-bb)**2);
+      if(dist >= threshold) continue;
+      d[i+3] = 0;
+      if(x>0) stack.push(p-1);
+      if(x<w-1) stack.push(p+1);
+      if(y>0) stack.push(p-w);
+      if(y<h-1) stack.push(p+w);
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return canvas.toDataURL('image/png');
+  }
+
+  function addClosetItem(src, color, cleanSrc){
+    itemIdCounter++;
+    const category = nextNeededCategory();
+    state.closet.push({id: itemIdCounter, src: cleanSrc || src, category, hex: color.hex, r:color.r, g:color.g, b:color.b, occasion:'Any', wearCount:0});
+    renderCloset();
+  }
+
+  function hueToColorName(item){
+    const {h,s,l} = rgbToHsl(item.r,item.g,item.b);
+    if(s < 15) return l < 20 ? 'black' : l > 85 ? 'white' : 'grey';
+    if(h < 15 || h >= 345) return 'red';
+    if(h < 45) return 'orange';
+    if(h < 70) return 'yellow';
+    if(h < 170) return 'green';
+    if(h < 200) return 'teal';
+    if(h < 255) return 'blue';
+    if(h < 290) return 'purple';
+    return 'pink';
+  }
+
+  function filteredCloset(){
+    return state.closet.filter(item => {
+      if(state.filterCategory !== 'All' && item.category !== state.filterCategory) return false;
+      const q = state.filterQuery.trim().toLowerCase();
+      if(!q) return true;
+      return hueToColorName(item).includes(q) || item.category.toLowerCase().includes(q) || item.hex.toLowerCase().includes(q);
+    });
+  }
+
+  function renderClosetFilterBar(){
+    const bar = document.getElementById('closetFilterBar');
+    bar.innerHTML = CLOSET_FILTERS.map(f =>
+      `<button class="filter-chip ${state.filterCategory===f?'selected':''}" data-f="${f}">${f}</button>`
+    ).join('');
+    bar.querySelectorAll('.filter-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.filterCategory = btn.dataset.f;
+        renderClosetFilterBar();
+        renderCloset();
+      });
+    });
+  }
+  document.getElementById('closetSearch').addEventListener('input', e => {
+    state.filterQuery = e.target.value;
+    renderCloset();
+  });
+
+  function renderCloset(){
+    const grid = document.getElementById('closetGrid');
+    const empty = document.getElementById('closetEmpty');
+    document.getElementById('closetFilterWrap').style.display = state.closet.length ? 'block' : 'none';
+    grid.innerHTML = '';
+    const list = filteredCloset();
+    empty.style.display = list.length ? 'none' : 'block';
+    empty.querySelector('p').textContent = state.closet.length
+      ? 'No items match this filter.'
+      : 'Your closet is empty. Add a top, a bottom, and a pair of footwear to unlock outfit suggestions.';
+    list.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.innerHTML = `
+        <button class="remove-btn" data-id="${item.id}" aria-label="Remove item" title="Remove">✕</button>
+        <img src="${item.src}" alt="Clothing item">
+        <div class="item-meta">
+          <div class="swatch-row">
+            <span class="swatch" style="background:${item.hex}"></span>
+            <span class="swatch-label">${item.hex}</span>
+          </div>
+          <span class="mini-label">Category</span>
+          <select class="cat-select" data-id="${item.id}">
+            <option ${item.category==='Top'?'selected':''}>Top</option>
+            <option ${item.category==='Bottom'?'selected':''}>Bottom</option>
+            <option ${item.category==='One-piece'?'selected':''}>One-piece</option>
+            <option ${item.category==='Footwear'?'selected':''}>Footwear</option>
+            <option ${item.category==='Outerwear'?'selected':''}>Outerwear</option>
+            <option ${item.category==='Accessory'?'selected':''}>Accessory</option>
+          </select>
+          <span class="mini-label">Occasion</span>
+          <select class="cat-select occ-select" data-occ-id="${item.id}">
+            ${OCCASIONS.map(o => `<option ${item.occasion===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+          ${item.wearCount ? `<span class="worn-badge">Worn ${item.wearCount}×</span>` : ''}
+          <p class="confirm-note" data-note-id="${item.id}"></p>
+        </div>`;
+      grid.appendChild(card);
+    });
+    grid.querySelectorAll('.cat-select[data-id]').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const item = state.closet.find(i => i.id === +sel.dataset.id);
+        item.category = sel.value;
+        checkGenerate();
+        const note = grid.querySelector(`.confirm-note[data-note-id="${item.id}"]`);
+        if(note){
+          note.textContent = `Changed to ${sel.value} — make sure this photo actually shows a ${sel.value.toLowerCase()}.`;
+          note.classList.add('visible');
+          clearTimeout(note._fadeTimer);
+          note._fadeTimer = setTimeout(() => note.classList.remove('visible'), 4000);
+        }
+      });
+    });
+    grid.querySelectorAll('.occ-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const item = state.closet.find(i => i.id === +sel.dataset.occId);
+        item.occasion = sel.value;
+      });
+    });
+    grid.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.closet = state.closet.filter(i => i.id !== +btn.dataset.id);
+        renderCloset();
+      });
+    });
+    checkGenerate();
+  }
+
+  function checkGenerate(){
+    const counts = {
+      Top: state.closet.filter(i=>i.category==='Top').length,
+      Bottom: state.closet.filter(i=>i.category==='Bottom').length,
+      OnePiece: state.closet.filter(i=>i.category==='One-piece').length,
+      Footwear: state.closet.filter(i=>i.category==='Footwear').length,
+      Outerwear: state.closet.filter(i=>i.category==='Outerwear').length,
+      Accessory: state.closet.filter(i=>i.category==='Accessory').length,
+    };
+    const hasTop = counts.Top > 0, hasBottom = counts.Bottom > 0, hasOnePiece = counts.OnePiece > 0, hasShoes = counts.Footwear > 0;
+    const hasOutfitBase = (hasTop && hasBottom) || hasOnePiece;
+    document.getElementById('btnGenerate').disabled = !(hasOutfitBase && hasShoes);
+
+    const missing = [];
+    if(!hasOutfitBase) missing.push('a top+bottom (or a one-piece)');
+    if(!hasShoes) missing.push('footwear');
+
+    const topBottomCombos = counts.Top * counts.Bottom;
+    const totalCombos = topBottomCombos * counts.Footwear + counts.OnePiece * counts.Footwear;
+    const status = document.getElementById('closetStatus');
+    if(state.closet.length === 0){
+      status.textContent = '';
+    } else if(totalCombos <= 1){
+      status.textContent = `You have: ${counts.Top} top, ${counts.Bottom} bottom, ${counts.OnePiece} one-piece, ${counts.Footwear} footwear. `
+        + (missing.length
+            ? `Add ${missing.join(' and ')} to see your first outfit.`
+            : `That's enough for one outfit — add a second piece for real variety and matching.`);
+    } else {
+      status.textContent = `You have enough for ${totalCombos} outfit combination${totalCombos>1?'s':''}. Add more pieces any time for more variety.`;
+    }
+  }
+
+  document.getElementById('btnGenerate').addEventListener('click', () => {
+    state.showAll = false;
+    buildOutfits();
+    goTo('suggestions');
+  });
+  document.getElementById('btnBackToCloset').addEventListener('click', () => goTo('closet'));
+  document.getElementById('btnBrowseAll').addEventListener('click', () => {
+    state.showAll = true;
+    buildOutfits();
+  });
+
+  // ---- Screen 4: Outfit generation ----
+  function harmonyScore(a, b){
+    const ha = rgbToHsl(a.r,a.g,a.b).h, hb = rgbToHsl(b.r,b.g,b.b).h;
+    let diff = Math.abs(ha-hb);
+    if(diff>180) diff = 360-diff;
+    // reward analogous (close) or complementary-ish (far) hues, penalize the muddy middle
+    if(diff < 30) return 0.85;
+    if(diff > 140) return 0.75;
+    if(diff > 60 && diff < 120) return 0.6;
+    return 0.4;
+  }
+
+  function comboKey(c){
+    const oneId = c.onepiece ? c.onepiece.id : 0;
+    return [c.top?c.top.id:0, c.bottom?c.bottom.id:0, oneId, c.shoe.id, c.layer ? c.layer.id : 0, c.accessory ? c.accessory.id : 0].join('-');
+  }
+  function comboIds(c){
+    return [c.top,c.bottom,c.onepiece,c.shoe,c.layer,c.accessory].filter(Boolean).map(i=>i.id);
+  }
+
+  const NOTE_COLOR_HUES = {
+    red:0, orange:30, yellow:60, gold:45, green:120, olive:70, teal:180,
+    blue:220, navy:220, purple:270, lavender:265, pink:330, rose:340,
+    pastel:null, brown:25, beige:35
+  };
+  function noteHueTargets(note){
+    const lower = (note||'').toLowerCase();
+    return Object.entries(NOTE_COLOR_HUES)
+      .filter(([word]) => lower.includes(word))
+      .map(([,hue]) => hue)
+      .filter(h => h !== null);
+  }
+  function noteAffinity(item, targets){
+    if(!targets.length) return 0;
+    const h = rgbToHsl(item.r,item.g,item.b).h;
+    const dists = targets.map(t => { let d = Math.abs(h-t); return d>180?360-d:d; });
+    const closest = Math.min(...dists);
+    return closest < 40 ? 1 - closest/40 : 0;
+  }
+
+  // Average past rating (1-5) of outfits that included this specific item, mapped to a -1..+1 nudge
+  function itemAffinity(itemId){
+    const past = state.activity.filter(a => a.itemIds.includes(itemId));
+    if(past.length === 0) return 0;
+    const avg = past.reduce((s,a) => s + a.rating, 0) / past.length;
+    return (avg - 3) / 2; // 1★ -> -1, 3★ -> 0, 5★ -> +1
+  }
+
+  let comboStore = {};
+
+  function buildOutfits(){
+    const byOcc = i => state.occasionPick === 'Any' || i.occasion === 'Any' || i.occasion === state.occasionPick;
+    const tops = state.closet.filter(i=>i.category==='Top' && byOcc(i));
+    const bottoms = state.closet.filter(i=>i.category==='Bottom' && byOcc(i));
+    const onepieces = state.closet.filter(i=>i.category==='One-piece' && byOcc(i));
+    const shoes = state.closet.filter(i=>i.category==='Footwear' && byOcc(i));
+    const outerwear = state.closet.filter(i=>i.category==='Outerwear' && byOcc(i));
+    const accessories = state.closet.filter(i=>i.category==='Accessory' && byOcc(i));
+
+    const forceLayer = state.weatherPick === 'Cold' || state.weatherPick === 'Rainy';
+    const forbidLayer = state.weatherPick === 'Hot';
+
+    let combos = [];
+    const noteTargets = noteHueTargets(state.note);
+    const hasRatings = state.activity.length > 0;
+
+    function scoreAndPush(base, colorPair1, colorPair2, colorPair3, noteItems){
+      const colorScore = (harmonyScore(...colorPair1) + harmonyScore(...colorPair2) + harmonyScore(...colorPair3)) / 3;
+      const ids = comboIds(base);
+      const affinity = hasRatings
+        ? (ids.reduce((sum,id) => sum + itemAffinity(id), 0) / ids.length) * 0.5 + 0.5
+        : 0;
+      const noteBoost = noteTargets.length
+        ? noteItems.reduce((sum,i) => sum + noteAffinity(i, noteTargets), 0) / noteItems.length
+        : 0;
+      let colorWeight = 0.7, affinityWeight = hasRatings ? 0.2 : 0, noteWeight = noteTargets.length ? 0.2 : 0;
+      const total = colorWeight + affinityWeight + noteWeight;
+      colorWeight/=total; affinityWeight/=total; noteWeight/=total;
+      base.score = colorScore*colorWeight + affinity*affinityWeight + noteBoost*noteWeight;
+      combos.push(base);
+    }
+
+    function pickLayer(){
+      if(forbidLayer || !outerwear.length) return null;
+      if(forceLayer) return outerwear[Math.floor(Math.random()*outerwear.length)];
+      return outerwear.length ? outerwear[Math.floor(Math.random()*outerwear.length)] : null;
+    }
+    function pickAccessory(){
+      return accessories.length ? accessories[Math.floor(Math.random()*accessories.length)] : null;
+    }
+
+    tops.forEach(t => bottoms.forEach(b => shoes.forEach(s => {
+      const layer = pickLayer(), accessory = pickAccessory();
+      scoreAndPush({top:t, bottom:b, shoe:s, layer, accessory}, [t,b], [b,s], [t,s], [t,b,s]);
+    })));
+    onepieces.forEach(op => shoes.forEach(s => {
+      const layer = pickLayer(), accessory = pickAccessory();
+      scoreAndPush({onepiece:op, shoe:s, layer, accessory}, [op,s], [op,s], [op,s], [op,s]);
+    }));
+    combos.sort((a,b) => b.score - a.score);
+    comboStore = {};
+    combos.forEach(c => comboStore[comboKey(c)] = c);
+
+    const list = document.getElementById('outfitList');
+    const sub = document.getElementById('suggestSub');
+    const browseWrap = document.getElementById('browseAllWrap');
+    const learningNote = document.getElementById('learningNote');
+    list.innerHTML = '';
+
+    if(combos.length === 0){
+      const reason = (tops.length||onepieces.length) && shoes.length
+        ? 'No items match the occasion/weather you picked — try "Any" or add matching pieces.'
+        : 'Add a bit more to your closet to see outfit ideas.';
+      list.innerHTML = `<div class="empty-state"><div class="icon">👕</div><p>${reason}</p></div>`;
+      browseWrap.style.display = 'none';
+      learningNote.textContent = '';
+      return;
+    }
+
+    const styleList = [...state.styles].join(', ') || 'your taste';
+    const contextBits = [];
+    if(state.occasionPick !== 'Any') contextBits.push(state.occasionPick.toLowerCase());
+    if(state.weatherPick !== 'Any') contextBits.push(state.weatherPick.toLowerCase()+' weather');
+    const contextStr = contextBits.length ? ` for ${contextBits.join(', ')}` : '';
+
+    let shown;
+    const onlyOneEver = combos.length === 1;
+    if(state.showAll){
+      shown = combos;
+      sub.textContent = `Every combination from your closet${contextStr}, no filtering.`;
+      browseWrap.style.display = 'none';
+    } else if(onlyOneEver){
+      shown = combos;
+      sub.textContent = `This is the only outfit your closet can currently make${contextStr} — add more pieces for real variety and matching.`;
+      browseWrap.style.display = 'none';
+    } else {
+      shown = combos.slice(0, Math.min(3, combos.length));
+      sub.textContent = state.note
+        ? `Matched to your style picks: ${styleList}${contextStr}. Also factoring in: "${state.note}".`
+        : `Matched to your style picks: ${styleList}${contextStr}.`;
+      browseWrap.style.display = combos.length > shown.length ? 'block' : 'none';
+    }
+
+    learningNote.textContent = state.activity.length
+      ? `Learning from ${state.activity.length} rating${state.activity.length>1?'s':''} you've given so far.`
+      : 'Tap a look, then rate it — suggestions improve as you rate more.';
+
+    shown.forEach((c) => {
+      const key = comboKey(c);
+      const pct = Math.round(c.score*100);
+      let matchLabel;
+      if(onlyOneEver) matchLabel = 'Only combo available';
+      else if(pct >= 80) matchLabel = 'Strong match';
+      else if(pct >= 60) matchLabel = 'Good match';
+      else if(pct >= 40) matchLabel = 'Worth trying';
+      else matchLabel = 'Bold pick';
+
+      const card = document.createElement('div');
+      card.className = 'outfit-card';
+      card.dataset.key = key;
+      const existingRating = state.ratings[key] || 0;
+      const isSaved = state.saved.some(s => comboKey(s) === key);
+      card.innerHTML = `
+        <span class="match-tag">${state.showAll ? 'All styles' : matchLabel}</span>
+        <div class="outfit-imgs">
+          ${c.top ? `<img src="${c.top.src}" alt="Top">` : ''}
+          ${c.bottom ? `<img src="${c.bottom.src}" alt="Bottom">` : ''}
+          ${c.onepiece ? `<img src="${c.onepiece.src}" alt="One-piece">` : ''}
+          <img src="${c.shoe.src}" alt="Footwear">
+          ${c.layer ? `<img src="${c.layer.src}" alt="Outerwear">` : ''}
+          ${c.accessory ? `<img src="${c.accessory.src}" alt="Accessory">` : ''}
+        </div>
+        <p class="outfit-tagline">Outfit</p>
+        <p class="outfit-note">${c.onepiece ? c.onepiece.hex+' one-piece' : c.top.hex+' top · '+c.bottom.hex+' bottom'} · ${c.shoe.hex} footwear${c.layer? ' · layered':''}${c.accessory? ' · accessorised':''} — colour match ${pct}%</p>
+        <div class="rate-row ${existingRating ? 'visible' : ''}">
+          <span class="rate-label">Rate this look:</span>
+          <span class="stars">
+            ${[1,2,3,4,5].map(n => `<span class="star ${n<=existingRating?'filled':''}" data-n="${n}">★</span>`).join('')}
+          </span>
+        </div>
+        ${existingRating ? `<p class="rated-note">Rated ${existingRating}/5 — saved</p>` : ''}
+        <div class="card-actions">
+          <button class="icon-btn btn-worn" data-key="${key}">👟 Mark as worn</button>
+          <button class="icon-btn btn-save ${isSaved?'active':''}" data-key="${key}">${isSaved?'♥ Saved':'♡ Save'}</button>
+          <button class="icon-btn btn-calendar" data-key="${key}">📅 Add to calendar</button>
+        </div>
+        <div class="day-picker" data-key="${key}" style="display:none;">
+          ${DAYS.map(d => `<button data-day="${d}" data-key="${key}">${d}</button>`).join('')}
+        </div>
+      `;
+      card.dataset.ids = JSON.stringify(comboIds(c));
+      list.appendChild(card);
+    });
+  }
+
+  document.getElementById('outfitList').addEventListener('click', e => {
+    const star = e.target.closest('.star');
+    const wornBtn = e.target.closest('.btn-worn');
+    const saveBtn = e.target.closest('.btn-save');
+    const calBtn = e.target.closest('.btn-calendar');
+    const dayBtn = e.target.closest('.day-picker button');
+    const card = e.target.closest('.outfit-card');
+    if(!card) return;
+
+    if(star){
+      e.stopPropagation();
+      const n = +star.dataset.n;
+      const key = card.dataset.key;
+      const ids = JSON.parse(card.dataset.ids);
+      state.ratings[key] = n;
+      state.activity.push({key, itemIds: ids, rating: n});
+      // repaint stars + note within this card
+      card.querySelectorAll('.star').forEach(s => s.classList.toggle('filled', +s.dataset.n <= n));
+      let note = card.querySelector('.rated-note');
+      if(!note){
+        note = document.createElement('p');
+        note.className = 'rated-note';
+        card.appendChild(note);
+      }
+      note.textContent = `Rated ${n}/5 — saved`;
+      document.getElementById('learningNote').textContent =
+        `Learning from ${state.activity.length} rating${state.activity.length>1?'s':''} you've given so far.`;
+      return;
+    }
+
+    if(wornBtn){
+      e.stopPropagation();
+      const c = comboStore[wornBtn.dataset.key];
+      if(!c) return;
+      if(wornBtn.dataset.wornId){
+        // undo
+        const entryId = +wornBtn.dataset.wornId;
+        const entry = state.history.find(h => h.id === entryId);
+        if(entry){
+          entry.itemIds.forEach(id => {
+            const item = state.closet.find(i => i.id === id);
+            if(item) item.wearCount = Math.max(0, (item.wearCount||0) - 1);
+          });
+          state.history = state.history.filter(h => h.id !== entryId);
+        }
+        wornBtn.textContent = '👟 Mark as worn';
+        wornBtn.classList.remove('active');
+        delete wornBtn.dataset.wornId;
+        return;
+      }
+      const ids = comboIds(c);
+      ids.forEach(id => {
+        const item = state.closet.find(i => i.id === id);
+        if(item) item.wearCount = (item.wearCount||0) + 1;
+      });
+      state.wornCounter++;
+      state.history.push({id: state.wornCounter, label: `Worn look ${state.wornCounter}`, snapshot: comboSnapshot(c), itemIds: ids});
+      wornBtn.textContent = '✓ Worn — tap to undo';
+      wornBtn.classList.add('active');
+      wornBtn.dataset.wornId = state.wornCounter;
+      return;
+    }
+
+    if(saveBtn){
+      e.stopPropagation();
+      const key = saveBtn.dataset.key;
+      const c = comboStore[key];
+      if(!c) return;
+      const idx = state.saved.findIndex(s => comboKey(s) === key);
+      if(idx >= 0){
+        state.saved.splice(idx,1);
+        saveBtn.textContent = '♡ Save';
+        saveBtn.classList.remove('active');
+      } else {
+        state.saved.push(c);
+        saveBtn.textContent = '♥ Saved';
+        saveBtn.classList.add('active');
+      }
+      return;
+    }
+
+    if(calBtn){
+      e.stopPropagation();
+      const picker = card.querySelector('.day-picker');
+      picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
+      return;
+    }
+
+    if(dayBtn){
+      e.stopPropagation();
+      const key = dayBtn.dataset.key;
+      const c = comboStore[key];
+      if(!c) return;
+      state.calendar[dayBtn.dataset.day] = c;
+      const picker = dayBtn.closest('.day-picker');
+      picker.querySelectorAll('button').forEach(b => b.classList.remove('filled'));
+      dayBtn.classList.add('filled');
+      setTimeout(() => { picker.style.display = 'none'; }, 500);
+      return;
+    }
+
+    // clicking the card itself: select it and reveal the rating row
+    document.querySelectorAll('.outfit-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    card.querySelector('.rate-row').classList.add('visible');
+  });
+</script>
+
+</body>
+</html>
